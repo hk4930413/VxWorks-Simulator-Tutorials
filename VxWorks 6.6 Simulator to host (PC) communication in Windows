@@ -1,0 +1,14 @@
+•	Simulator to host communication Implementation method in vxworks 6.6 using Wind River workbench 3.0 on windows
+
+
+1. Firstly install the wrtap drivers (go to vxworks 6.6 simulator guide page no 66)
+2. Then start the simnetd service by running install_directory\vxworks-6.6\host\x86-win32\bin\simnet-ints.exe as an administrator (go to vxworks 6.6 simulator guide page no 51)
+3. Run the windriver network daemon services from services program using admin privileges 
+4. Turn off firewall options (type windows defender firewall with advanced security and then turn them off)
+5. Then edit the simulator properties. Go to advance boot parameters > boot device > simnet and then assign the ip 192.168.200.1 in “Inet on ethernet” option, Then write “-ni simnet” in other vxworks simulator options in vxworks simulator miscellenous option in simulator properties.
+7. Note that ip should be of same subnet.
+8. Make an image project and then make an empty c file in it. Then go to kernel configurations, add ping components (INCLUDE_PING) in it. Then build the image and then configure the simulator with this image.
+9. Ping the wrtap ip from simulator 
+
+
+•	Help also available on following link http://rogeriodossantos.github.io/MainPage/VxWorks-Network_access_on_VxWorks_Simulator/
