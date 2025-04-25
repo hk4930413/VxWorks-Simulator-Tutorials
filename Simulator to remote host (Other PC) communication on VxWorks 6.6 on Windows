@@ -1,0 +1,42 @@
+Simulator to remote host direct communication using wrtap as bridge connection (for more information go to page 91,92 of vxworks simulator guide 6.6)
+
+Method of doing this is given below
+
+•	Simulator to host communication Implementation method in vxworks 6.6 using Wind River workbench 3.0 on windows
+
+
+1. Firstly install the wrtap drivers (go to vxworks 6.6 simulator guide page no 66)
+2. Then start the simnetd service by running install_directory\vxworks-6.6\host\x86-win32\bin\simnet-ints.exe as an administrator (go to vxworks 6.6 simulator guide page no 51)
+3. Run the windriver network daemon services from services program using admin privileges 
+4. Turn off firewall options (type windows defender firewall with advanced security and then turn them off)
+5. Then edit the simulator properties. Go to advance boot parameters > boot device > simnet and then assign the ip 192.168.200.1 in “Inet on ethernet” option, Then write “-ni simnet” in other vxworks simulator options in vxworks simulator miscellenous option in simulator properties.
+7. Note that ip should be of same subnet.
+8. Make an image project and then make an empty c file in it. Then go to kernel configurations, add ping components (INCLUDE_PING) in it. Then build the image and then configure the simulator with this image.
+9. Ping the wrtap ip from simulator 
+
+Now after doing above steps you should be able to ping your host (PC) ip from simulator, then now follow below steps:
+
+1. Create a vxsimnetd configuration file for your local subnet (this example assumes that your local subnet is 192.168.200.0):
+
+SUBNET_START local_subnet {
+SUBNET_ADDRESS = "192.168.200.0";
+SUBNET_MASK = "255.255.255.0";
+SUBNET_EXTERNAL = yes;
+SUBNET_EXTPROMISC = no;
+};
+
+save this file as NDC.txt in install_directory and also connect the other PC (remote host) with your PC with ethernet cable
+
+2. Start up vxsimnetd using the configuration file you just created with the following command in VxWorks Development shell (Development shell should be running with admin previliges)
+
+           > vxsimnetd -f NDC.text -s
+
+3. Once you have started vxsimnetd, check the network interfaces in control panel->network connections: you should be able to see the wrtap interface configured on the same subnetwork as your local network interface (for example, local interface of 192168.200.2, and wrtap interface of 192.168.200.254).
+
+4. To set up the bridge, control-click to select both interfaces then right click and select bridge from the popup menu. select the newly created bridge then right click and select properties. configure the bridge as the local interface is configured (either dhcp or fixed address and gateway).
+
+ 5. Start vxsim:
+       > vxsim -d simnet -e 192.168.200.254 -f workspace\test2\default\vxWorks
+ You should now be able to access any other host without modifying routing tables. Note that you should use our own image project build kernel that have ping enabled.
+
+6. If you started vxsimnetd as a service with your local subnet configuration, the bridge will be available after a reboot of your computer.
